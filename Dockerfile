@@ -1,10 +1,10 @@
-# Start with a Java base image
-FROM openjdk:11-jre-slim
+# Use a modern, supported Java 11 image
+FROM eclipse-temurin:11-jre
 
-# Set working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy the compiled Jar file from the target folder
+# Copy the compiled Jar file
 COPY target/*.jar app.jar
 
 # Run the application
