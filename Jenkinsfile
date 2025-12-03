@@ -25,7 +25,7 @@ pipeline {
             steps {
                 echo 'Compiling with Maven...'
                 // THIS COMMAND CREATES THE JAR FILE
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
 
