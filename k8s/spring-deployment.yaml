@@ -38,7 +38,7 @@ spec:
       - name: spring-app
         image: medazizhammami/timesheet-app:latest
         ports:
-        - containerPort: 8080    # <--- FIXED: Default Spring Boot Port
+        - containerPort: 8080    
         envFrom:
         - configMapRef:
             name: spring-config
@@ -54,6 +54,6 @@ spec:
     app: spring-app
   type: NodePort  
   ports:
-    - port: 8080        # <--- FIXED: Internal Port
-      targetPort: 8082  # <--- FIXED: Target Container Port
+    - port: 8080        
+      targetPort: 8082  
       nodePort: 30080
