@@ -81,7 +81,7 @@ pipeline {
                 kubectl run test-curl -i --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
                   curl -s -v -X POST http://spring-service:8080/timesheet-devops/user/add-user \
                   -H "Content-Type: application/json" \
-                  -d '{"firstName": "Jenkins", "lastName": "Pipeline", "role": "ADMINISTRATEUR", "dateNaissance": "2025-01-01"}'
+                  -d '{"firstName": "Jenkins", "lastName": "Pipeline2", "role": "ADMINISTRATEUR", "dateNaissance": "2025-02-02"}'
                 '''
             }
         }
