@@ -64,16 +64,17 @@ pipeline {
         }
 
       stage('Test Application') {
-        steps {
-            script {
-                echo 'Testing the Spring Boot app from a pod...'
-                sh '''
-                kubectl run test-curl -i --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
-                  curl -s -f http://spring-service:8080/timesheet-devops/user/retrieve-all-users
-                '''
-            }
+    steps {
+        script {
+            echo 'Testing the Spring Boot app...'
+            sh 'sleep 60'
+            sh '''
+            kubectl run test-curl -i --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
+              curl -s -f http://spring-service:8080/timesheet-devops/user/retrieve-all-users
+            '''
         }
     }
+}
 
     }
 }
