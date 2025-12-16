@@ -56,7 +56,7 @@ pipeline {
                     echo 'Deploying to Kubernetes...'
                     sh '''
                     kubectl apply -f k8s/mysql-deployment.yaml -n $KUBE_NAMESPACE
-                    kubectl apply -f k8s/spring-app-deployment.yaml -n $KUBE_NAMESPACE
+                    kubectl apply -f k8s/spring-deployment.yaml -n $KUBE_NAMESPACE
                     kubectl rollout status deployment/spring-app -n $KUBE_NAMESPACE
                     '''
                 }
