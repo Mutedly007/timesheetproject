@@ -55,8 +55,8 @@ pipeline {
             script {
                 echo 'Deploying to Kubernetes...'
                 sh '''
-                kubectl apply -f mysql-deployment.yaml -n $KUBE_NAMESPACE
-                kubectl apply -f spring-deployment.yaml -n $KUBE_NAMESPACE
+                kubectl apply -f k8s/mysql-deployment.yaml -n $KUBE_NAMESPACE
+                kubectl apply -f k8s/spring-deployment.yaml -n $KUBE_NAMESPACE
                 
                 # FORCE RESTART to pick up the new 'latest' image
                 kubectl rollout restart deployment/spring-app -n $KUBE_NAMESPACE
@@ -68,18 +68,24 @@ pipeline {
         }
     }
 
-      stage('Test Application') {
-    steps {
-        script {
-            echo 'Testing the Spring Boot app...'
-            sh 'sleep 60'
-            sh '''
-            kubectl run test-curl -i --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
-              curl -s -f http://spring-service:8080/timesheet-devops/user/retrieve-all-users
-            '''
+     stage('Test Application') {
+        steps {
+            script {
+                echo 'Testing the Spring Boot app...'
+                // Wait for the app to start
+                sh 'sleep 60'
+                
+                // Use the correct internal port (8080 or 8082 - whichever matches your Service)
+                // AND use the correct ROLE: ADMINISTRATEUR
+                sh '''
+                kubectl run test-curl -i --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
+                  curl -s -v -X POST http://spring-service:8080/timesheet-devops/user/add-user \
+                  -H "Content-Type: application/json" \
+                  -d '{"firstName": "Jenkins", "lastName": "Pipeline", "role": "ADMINISTRATEUR", "dateNaissance": "2025-01-01"}'
+                '''
+            }
         }
     }
-}
 
     }
 }
