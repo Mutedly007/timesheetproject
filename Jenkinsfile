@@ -68,8 +68,8 @@ pipeline {
         script {
             echo 'Testing the Spring Boot app from a pod...'
             sh '''
-            kubectl run test-curl --rm -i --tty --image=curlimages/curl -n $KUBE_NAMESPACE --restart=Never -- \
-              curl -s http://spring-service:8082/timesheet-devops/user/retrieve-all-users
+            kubectl run test-curl --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
+              curl -s http://spring-service:9090/timesheet-devops/user/retrieve-all-users
             '''
         }
     }
