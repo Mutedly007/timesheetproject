@@ -55,5 +55,5 @@ spec:
   type: NodePort  
   ports:
     - port: 8080        # <--- FIXED: Internal Port
-      targetPort: 8080  # <--- FIXED: Target Container Port
+      targetPort: 8082  # <--- FIXED: Target Container Port
       nodePort: 30080
