@@ -14,8 +14,10 @@ metadata:
   name: spring-secret
 type: Opaque
 data:
-  # user: spring, pass: spring123 (Base64 encoded)
+  # REVERTED TO SPRING USER (Since you fixed the DB permissions)
+  # user: spring (c3ByaW5n)
   SPRING_DATASOURCE_USERNAME: c3ByaW5n
+  # pass: spring123 (c3ByaW5nMTIz)
   SPRING_DATASOURCE_PASSWORD: c3ByaW5nMTIz
 ---
 apiVersion: apps/v1
@@ -34,10 +36,9 @@ spec:
     spec:
       containers:
       - name: spring-app
-        # UPDATED TO YOUR IMAGE
         image: medazizhammami/timesheet-app:latest
         ports:
-        - containerPort: 8082
+        - containerPort: 8080    # <--- FIXED: Default Spring Boot Port
         envFrom:
         - configMapRef:
             name: spring-config
@@ -49,11 +50,10 @@ kind: Service
 metadata:
   name: spring-service
 spec:
-  
   selector:
     app: spring-app
   type: NodePort  
   ports:
-    - port: 8080
-      targetPort: 8082
+    - port: 8080        # <--- FIXED: Internal Port
+      targetPort: 8080  # <--- FIXED: Target Container Port
       nodePort: 30080
