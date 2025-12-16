@@ -51,17 +51,22 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    echo 'Deploying to Kubernetes...'
-                    sh '''
-                    kubectl apply -f k8s/mysql-deployment.yaml -n $KUBE_NAMESPACE
-                    kubectl apply -f k8s/spring-deployment.yaml -n $KUBE_NAMESPACE
-                    kubectl rollout status deployment/spring-app -n $KUBE_NAMESPACE
-                    '''
-                }
+        steps {
+            script {
+                echo 'Deploying to Kubernetes...'
+                sh '''
+                kubectl apply -f mysql-deployment.yaml -n $KUBE_NAMESPACE
+                kubectl apply -f spring-deployment.yaml -n $KUBE_NAMESPACE
+                
+                # FORCE RESTART to pick up the new 'latest' image
+                kubectl rollout restart deployment/spring-app -n $KUBE_NAMESPACE
+                
+                # Wait for the rollout to finish
+                kubectl rollout status deployment/spring-app -n $KUBE_NAMESPACE
+                '''
             }
         }
+    }
 
       stage('Test Application') {
     steps {
