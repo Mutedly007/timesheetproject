@@ -1,17 +1,16 @@
 pipeline {
     agent any
 
-    // MAKE SURE THESE NAMES MATCH YOUR JENKINS TOOLS CONFIG
     tools { 
         jdk 'JAVA_HOME' 
         maven 'M2_HOME' 
     }
 
     environment {
-        // --- YOUR VARIABLES ---
-        DOCKER_HUB_USER = 'medazizhammami' 
+        DOCKER_HUB_USER = 'medazizhammami'
         IMAGE_NAME = 'timesheet-app'
         REGISTRY_CREDS = 'docker-hub-creds'
+        KUBE_NAMESPACE = 'devops'
     }
 
     stages {
@@ -24,7 +23,6 @@ pipeline {
         stage('Clean & Compile') {
             steps {
                 echo 'Compiling with Maven...'
-                // THIS COMMAND CREATES THE JAR FILE
                 sh 'mvn clean package -Dmaven.test.skip=true'
             }
         }
@@ -48,6 +46,31 @@ pipeline {
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${BUILD_NUMBER}"
                         sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
                     }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    echo 'Deploying to Kubernetes...'
+                    sh '''
+                    kubectl apply -f k8s/mysql-deployment.yaml -n $KUBE_NAMESPACE
+                    kubectl apply -f k8s/spring-app-deployment.yaml -n $KUBE_NAMESPACE
+                    kubectl rollout status deployment/spring-app -n $KUBE_NAMESPACE
+                    '''
+                }
+            }
+        }
+
+        stage('Test Application') {
+            steps {
+                script {
+                    echo 'Testing the Spring Boot app...'
+                    sh '''
+                    APP_URL=$(minikube service spring-service -n $KUBE_NAMESPACE --url)
+                    curl $APP_URL/user/retrieve-all-users
+                    '''
                 }
             }
         }
