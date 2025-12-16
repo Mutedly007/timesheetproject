@@ -64,15 +64,16 @@ pipeline {
         }
 
         stage('Test Application') {
-            steps {
-                script {
-                    echo 'Testing the Spring Boot app...'
-                    sh '''
-                    APP_URL=$(minikube service spring-service -n $KUBE_NAMESPACE --url)
-                    curl $APP_URL/user/retrieve-all-users
-                    '''
-                }
-            }
+    steps {
+        script {
+            echo 'Testing the Spring Boot app from a pod...'
+            sh '''
+            kubectl run test-curl --rm -i --tty --image=curlimages/curl -n $KUBE_NAMESPACE --restart=Never -- \
+              curl -s http://spring-service:8082/timesheet-devops/user/retrieve-all-users
+            '''
         }
+    }
+}
+
     }
 }
