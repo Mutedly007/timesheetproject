@@ -72,11 +72,10 @@ pipeline {
         steps {
             script {
                 echo 'Testing the Spring Boot app...'
-                // Wait for the app to start
+    
                 sh 'sleep 60'
                 
-                // Use the correct internal port (8080 or 8082 - whichever matches your Service)
-                // AND use the correct ROLE: ADMINISTRATEUR
+
                 sh '''
                 kubectl run test-curl -i --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
                   curl -s -v -X POST http://spring-service:8080/timesheet-devops/user/add-user \
