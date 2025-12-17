@@ -62,18 +62,22 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-        steps {
-            script {
-                echo 'Deploying to Kubernetes...'
-                sh '''
-                kubectl apply -f ./mysql-deployment.yaml -n $KUBE_NAMESPACE
-                kubectl apply -f ./spring-deployment.yaml -n $KUBE_NAMESPACE
-                kubectl rollout restart deployment/spring-app -n $KUBE_NAMESPACE
-                kubectl rollout status deployment/spring-app -n $KUBE_NAMESPACE
-                '''
-            }
+    steps {
+        script {
+            echo 'Deploying to Kubernetes...'
+
+            // 1. Update the Spring Boot deployment to use the new Docker image
+            sh "kubectl set image deployment/spring-app spring-app=${DOCKER_HUB_USER}/${IMAGE_NAME}:latest -n $KUBE_NAMESPACE"
+
+            // 2. Force a restart to ensure it pulls the latest image
+            sh "kubectl rollout restart deployment/spring-app -n $KUBE_NAMESPACE"
+
+            // 3. Wait until the rollout is complete
+            sh "kubectl rollout status deployment/spring-app -n $KUBE_NAMESPACE"
         }
     }
+}
+
 
      stage('Test Application') {
         steps {
