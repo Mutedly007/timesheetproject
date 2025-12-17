@@ -27,6 +27,17 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    echo 'Running SonarQube Analysis...'
+                    withSonarQubeEnv('sonar-server') {
+                        sh 'mvn sonar:sonar -Dmaven.test.skip=true'
+                    }
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -80,7 +91,7 @@ pipeline {
                 kubectl run test-curl -i --rm --restart=Never --image=curlimages/curl -n $KUBE_NAMESPACE -- \
                   curl -s -v -X POST http://spring-service:8080/timesheet-devops/user/add-user \
                   -H "Content-Type: application/json" \
-                  -d '{"firstName": "zizou", "lastName": "ham", "role": "ADMINISTRATEUR", "dateNaissance": "2025-02-12"}'
+                  -d '{"firstName": "zizou1", "lastName": "ham2", "role": "ADMINISTRATEUR", "dateNaissance": "2025-02-12"}'
                 '''
             }
         }
