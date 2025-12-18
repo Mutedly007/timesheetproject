@@ -21,9 +21,10 @@ public class UserRestControl {
 	// URL : http://localhost:????/????/????/retrieve-all-users
 	@GetMapping("/retrieve-all-users")
 	public List<User> retrieveAllUsers() {
-		return userService.retrieveAllUsers();
-		//return list;
-	}
+    List<User> users = userService.retrieveAllUsers();
+    System.out.println("USERS = " + users);
+    return users;
+}
  
 	// http://localhost:????/timesheet-devops/retrieve-user/{user-id}
 	@GetMapping("/retrieve-user/{user-id}")
